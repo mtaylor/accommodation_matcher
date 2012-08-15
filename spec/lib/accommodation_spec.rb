@@ -15,6 +15,8 @@ module AccommodationMatcher
   
     describe "Traveller matching" do
       it "should find cheapest accommodation that matchers a travellers requirements within a given price range" do
+        
+        
       end
 
       it "should list all travellers booked at an accommodation by accommodation id" do

@@ -9,6 +9,7 @@ $: << File.join(File.dirname(__FILE__), "/../lib")
 
 require 'accommodation_matcher'
 require 'factory_girl'
+require 'database_cleaner'
 
 Dir.glob(File.join(File.dirname(__FILE__) + "/factories/", "**", "*.rb")).each do |file|
   require file
@@ -25,4 +26,14 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = 'random'
+
+  config.before :each do
+    DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner.start
+  end
+
+  config.after do
+    DatabaseCleaner.clean
+  end
+
 end

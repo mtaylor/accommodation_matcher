@@ -8,10 +8,20 @@ module AccommodationMatcher
     field :name,             type: String
     field :price,            type: Integer
 
-    # We rename attributes to attrs since it conflicts with mondoid 
+    # We rename attributes to attrs since it conflicts with mondoid
     # Mongoid::Attributes.attributes
     field :attrs, type: Array
 
     embeds_one :capacity
+
+    # Find Lowest Priced Accommodation that matches a travellers requirements
+    # and lower than a given price
+    def self.best_match(requirements, price)
+      self.all_in(attrs: requirements)
+          .lte(price: price)
+          .asc(:price)
+          .first
+    end
+
   end
 end

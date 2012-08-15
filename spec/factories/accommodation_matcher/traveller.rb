@@ -1,6 +1,7 @@
 FactoryGirl.define do
-  factory :price_range, :class => AccommodationMatcher::PriceRange do
-    min 10
-    max 50
+  factory :traveller, :class => AccommodationMatcher::Traveller do
+    sequence :traveller_id
+    name "Joe Blogs"
+    requirements ["wifi", "pool"]
   end
 end

@@ -1,6 +1,6 @@
 FactoryGirl.define do
-  factory :capacity, :class => AccommodationMatcher::Capacity do
-    total 30
-    free 10
+  factory :price_range, :class => AccommodationMatcher::PriceRange do
+    min 30
+    max 10
   end
 end

@@ -1,0 +1,27 @@
+[
+	{
+		"id": 0,
+		"name": "Mrs. Tess Goyette",
+		"priceRange": {
+			"max": 87,
+			"min": 86
+		},
+		"requirements": ["close to transport", "internet", "bath", "gym"]
+	}, {
+		"id": 1,
+		"name": "Mrs. Everardo Pacocha",
+		"priceRange": {
+			"max": 291,
+			"min": 40
+		},
+		"requirements": ["close to transport", "bar", "meeting rooms"]
+	}, {
+		"id": 2,
+		"name": "Izabella Fay",
+		"priceRange": {
+			"max": 93,
+			"min": 63
+		},
+		"requirements": ["close to transport", "bar", "parking", "gym", "quiet"]
+	}
+]

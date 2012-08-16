@@ -1,3 +1,9 @@
+GIT
+  remote: git://github.com/hoxworth/yajl-ruby.git
+  revision: 89a53cd58784fa7e94393bebc57146e7d431ee4d
+  specs:
+    yajl-ruby (0.8.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -39,3 +45,4 @@ DEPENDENCIES
   factory_girl
   mongoid (~> 3.0.0)
   rspec
+  yajl-ruby!

@@ -27,6 +27,7 @@ RSpec.configure do |config|
   config.order = 'random'
 
   config.before :each do
+    @fixtures_dir = File.join(File.dirname(__FILE__) + "/fixtures/")
     DatabaseCleaner.strategy = :truncation
     DatabaseCleaner.start
   end

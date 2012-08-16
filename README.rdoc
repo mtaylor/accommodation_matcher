@@ -1,0 +1,105 @@
+= Accommodation Matcher
+
+== Decisions / Assumptions
+
+=== Backend Datasource
+
+I presumed using a backend data source would be allowed in this task.
+
+This application is implemented using a document based database monogdb.  Mongodb write speed isn't fantastic which results in having slower import of json but it handles sharding and distribution rather well thus allowing querying over 10,000 or 1,000,000s of travellers and accommodations.  It also gives us a nice DSL for querying.  I also leaned on this a little since I wanted to try mongodb as an alternative to ActiveRecord.
+
+=== Initialization
+
+It seems rather inefficient to load the accommodation, traveller file on each user command.  I assumed it would be reasonable to load these files once.  Then query the stored data.
+
+It is possible to import the data files via 
+
+./ldbooker import <traveller_json> <accommodation_json>
+
+If you would like to remove all data from the application you can do so via
+
+./ldbooker clean
+
+The importer class reads in json files via a stream to limit memory usage.  It creates mongodb entries as json objects are read in.  The import time is around 1 minute on my machine (Since it's creating and writing objects to disk via mongodb).  Since we are only reading this data in once; I decided that query speed was more important than the initial import speed.  We could further improve query speed by adding indexing to models; however on my box that added an extra 40% to import speed and had negligent improvement to query speed.  This was tested on the provided data set of 1000 travellers, accommodations.
+
+== Installation
+
+=== Mongodb
+
+You need to have a running mongodb instance in order to run the application.  To install mongodb follow the instructions given here:  http://www.mongodb.org/display/DOCS/Quickstart
+
+The mongodb configuration file can be found under /config.  The config provided should work with a default mongodb setup.  The mongodb wesite has information on configuration if you'd rather not use the defaults.
+
+=== Ruby 1.9.3
+
+Mongoid (the ruby client to mongodb) requires a feature from 1.9.3
+
+=== Bundle Install
+
+Once you have mongodb and ruby 1.9.3 install the relevant gems via.
+
+  bundle install # From Project Root Directory
+
+== Testing
+
+We use rspec for testing.  To 
+
+  rspec spec/ #from project root directory
+
+== Running
+
+=== Clear database
+
+This will remove any existing data from the database.
+
+  ./bin/ldbooker clean
+
+=== Import Data Set
+
+Imports accommodation and travellers json files into the mongodb instance.  This is then used for all queries.
+
+  ./bin/ldbooker import travellers.json accommodation.json
+
+=== List Bookings for a particular accommodation
+
+  ./bin/lpbooker accommodation <accommodation_id>
+
+example
+
+  ./bin/lpbooker accommodation 4
+    accommodation_id: 4
+    Cronin Resort
+    ---
+    America Olson
+    Mr. Icie Christiansen
+    Dr. Jay Stroman
+    Dora Kerluke
+    Candelario Graham
+    Dr. Buddy Medhurst
+    Damon Moore
+
+=== List Travellers Bookings
+
+  ./bin/lpbooker traveller <traveller_id>
+
+example
+
+  ./bin/lpbooker traveller 2
+  Traveller ID: 2
+  Traveller: Izabella Fay
+  Booked At: Gerlach Farmstay
+
+=== Find Best Matched Accommodation for Requirements and price range
+
+  ./bin/lpbooker search 5 52 "internet"
+  -- Input --
+  Min Price: 5
+  Max Price: 52
+  Requirements: ["internet"]
+
+  -- Results --
+  Accommodation Found
+  Name: Fahey Farmstay
+  Price: 52
+  Requirements ["internet", "restaurant", "room service", "gym", "quiet"]
+

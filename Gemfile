@@ -7,6 +7,8 @@ gem "mongoid", "~> 3.0.0"
 # into memory.  This fork of the project adds nested object triggering.
 gem 'yajl-ruby', :git => 'git://github.com/hoxworth/yajl-ruby.git'
 
+gem 'clamp', "~> 0.4.0"
+
 group :test do
   gem "rspec"
   gem "factory_girl"

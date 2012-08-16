@@ -19,6 +19,7 @@ module AccommodationMatcher
     # Find Lowest Priced Accommodation that matches a travellers requirements
     # and lower than a given price
     def self.best_match(requirements, price_range)
+      # Mongoid allows us to concat criteria
       self.all_in(attrs: requirements)
           .lte(price: price_range.max)
           .gte(price: price_range.min)

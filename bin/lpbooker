@@ -1,45 +1,44 @@
 #!/usr/bin/env ruby
 
-# add gem "clamp", ">= 0.2.3" to your bundle file if you use this
-# clamp reference at https://github.com/mdub/clamp
-require 'clamp'
+$: << File.join(File.dirname(__FILE__), "/../lib")
 
+require 'clamp'
+require 'accommodation_matcher'
 
 class AccommodationCommand < Clamp::Command
-  parameter "TRAVELLERS_JSON", "travellers JSON data file"
-  parameter "ACCOMMODATION_JSON", "accommodation JSON data file"  
   parameter "ACCOMMODATION_ID", "Identifier of accommodation to display" do |s| 
     Integer(s)
   end
   
   def execute
-    puts "travellers_json: #{travellers_json}"
-    puts "accommodation_json: #{accommodation_json}"    
     puts "accommodation_id: #{accommodation_id}"
-    puts "go do your stuff..."
+    accommodation = AccommodationMatcher::Accommodation.where(accommodation_id: accommodation_id).first
+    puts accommodation.name
+    puts "---"
+    accommodation.travellers.each do |traveller|
+      puts traveller.name
+    end
   end
 end
 
 
 class TravellerCommand < Clamp::Command
-  parameter "TRAVELLERS_JSON", "travellers JSON data file"
-  parameter "ACCOMMODATION_JSON", "accommodation JSON data file"  
   parameter "TRAVELLER_ID", "Identifier of traveller to display" do |s| 
     Integer(s)
   end
-  
+
   def execute
-    puts "travellers_json: #{travellers_json}"
-    puts "accommodation_json: #{accommodation_json}"    
-    puts "traveller_id: #{traveller_id}"
-    puts "go do your stuff..."
-  end  
+    puts "Traveller ID: #{traveller_id}"
+    traveller = AccommodationMatcher::Traveller.where(traveller_id: traveller_id).first
+    puts "Traveller: #{traveller.name}"
+    traveller.accommodations.each do |a|
+      puts "Booked At: #{ a.name }"
+    end
+  end
 end
 
 
 class SearchCommand < Clamp::Command
-  parameter "TRAVELLERS_JSON", "travellers JSON data file"
-  parameter "ACCOMMODATION_JSON", "accommodation JSON data file"  
   parameter "MIN_PRICE", "Minimum price traveller wants to pay" do |s| 
     Integer(s)
   end
@@ -49,20 +48,46 @@ class SearchCommand < Clamp::Command
   parameter "REQUIREMENTS ...", "List of required attributes traveller desires"
   
   def execute
-    puts "travellers_json: #{travellers_json}"
-    puts "accommodation_json: #{accommodation_json}"    
-    puts "min_price: #{min_price}"
-    puts "max_price: #{max_price}"
-    puts "requirements_list: #{requirements_list}"
-    puts "go do your stuff..."
-  end  
+    puts "-- Input --"
+    puts "Min Price: #{min_price}"
+    puts "Max Price: #{max_price}"
+    puts "Requirements: #{requirements_list}"
+    puts "\n-- Results --"
+    price_range = AccommodationMatcher::PriceRange.new(:min => min_price, :max => max_price)
+    if accommodation = AccommodationMatcher::Accommodation.best_match(requirements_list, price_range)
+      puts "Accommodation Found"
+      puts "Name: #{accommodation.name}"
+      puts "Price: #{accommodation.price}"
+      puts "Requirements #{accommodation.attrs.inspect}"
+    else
+      puts "No Match Found"
+    end
+    
+  end
 end
 
+class ImportCommand < Clamp::Command
+  parameter "TRAVELLERS_JSON", "travellers JSON data file"
+  parameter "ACCOMMODATION_JSON", "accommodation JSON data file"
+
+  def execute
+    AccommodationMatcher::Importer.import_accommodations(File.new(accommodation_json))
+    AccommodationMatcher::Importer.import_travellers(File.new(travellers_json))
+  end
+end
+
+class CleanCommand < Clamp::Command
+  def execute
+    AccommodationMatcher::Importer.clean
+  end
+end
 
 class MainCommand < Clamp::Command
   subcommand "accommodation", "Find accommodation details including travellers booked there", AccommodationCommand
   subcommand "traveller", "Find traveller details showing where they are booked", TravellerCommand
   subcommand "search", "Search for suitable accommodation for a traveller", SearchCommand
+  subcommand "import", "Import existing travellers and accommodations from json files", ImportCommand
+  subcommand "clean", "Remove all existing accommodation and travellers from the application", CleanCommand
 end
 
 MainCommand.run

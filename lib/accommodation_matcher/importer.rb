@@ -19,6 +19,11 @@ module AccommodationMatcher
       import(file, proc)
     end
 
+    def self.clean
+      DatabaseCleaner.strategy = :truncation
+      DatabaseCleaner.clean
+    end
+
     private
     def self.import(file, proc)
       parser = Yajl::Parser.new(:process_nested => true, :nested_depth => 1, :symbolize_keys => true)

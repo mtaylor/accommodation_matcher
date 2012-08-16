@@ -1,6 +1,7 @@
 require "bundler/setup"
 require "mongoid"
 require "yajl"
+require 'database_cleaner'
 
 #  Load Mongoid Config
 Mongoid.load!(File.join(File.dirname(__FILE__), '../config/', 'mongoid.yml'), :development)

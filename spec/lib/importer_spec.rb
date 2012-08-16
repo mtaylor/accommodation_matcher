@@ -11,5 +11,11 @@ module AccommodationMatcher
       Importer.import_travellers(File.new(@fixtures_dir + 'travellers.json'))
       Traveller.all.size.should == 3
     end
+
+    it "should clear the database" do
+      FactoryGirl.create(:accommodation, :capacity => FactoryGirl.build(:capacity))
+      Importer.clean
+      Accommodation.all.size.should == 0
+    end
   end
 end
